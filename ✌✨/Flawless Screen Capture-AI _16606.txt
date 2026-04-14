@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flawless Screen Capture-AI _16606</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+        }
+        body {
+            background: #0a0e17;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 16px;
+        }
+        .container {
+            max-width: 1400px;
+            width: 100%;
+            background: #121a29;
+            border-radius: 64px;
+            border: 1px solid #2f4880;
+            padding: 32px 40px;
+            box-shadow: 0 30px 60px #000000cc, 0 0 0 1px #4664b0 inset;
+            backdrop-filter: blur(4px);
+        }
+        h1 {
+            margin: 0 0 12px 0;
+            font-weight: 500;
+            font-size: 2.2rem;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .gradient-text {
+            background: linear-gradient(145deg, #e0ecff, #9bb9ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .encoding-badge {
+            background: #1b2944;
+            border: 1px solid #4c6ecf;
+            color: #c4dbff;
+            border-radius: 60px;
+            padding: 6px 24px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+        .grid-panel {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin: 36px 0 28px;
+        }
+        .card {
+            background: #0f172b;
+            border-radius: 36px;
+            padding: 22px 20px;
+            border: 1px solid #2d4070;
+            box-shadow: 0 6px 0 #070b16;
+        }
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #a5befa;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            margin-bottom: 22px;
+        }
+        .radio-vertical {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .radio-item {
+            background: #1e2842;
+            border-radius: 40px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            border: 1px solid #354d82;
+            transition: all 0.1s;
+            cursor: pointer;
+        }
+        .radio-item.selected {
+            background: #27417c;
+            border-color: #85a6ff;
+            box-shadow: 0 0 0 2px #5275e0;
+        }
+        .radio-item input[type="radio"] {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #6d8cdf;
+            border-radius: 50%;
+            margin: 0 16px 0 0;
+            background: #0f1b30;
+        }
+        .radio-item input[type="radio"]:checked {
+            background: #85acff;
+            border-color: #d1e1ff;
+            box-shadow: 0 0 10px #3f6eff;
+        }
+        .radio-item label {
+            flex: 1;
+            color: #eef4ff;
+            font-weight: 500;
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+        .value-tag {
+            background: #1f3457;
+            border-radius: 30px;
+            padding: 4px 18px;
+            color: #c2d6ff;
+            font-family: monospace;
+        }
+
+        .codec-selector {
+            margin-top: 10px;
+        }
+        .select-wrapper {
+            background: #1b2746;
+            border-radius: 48px;
+            padding: 6px 18px 6px 28px;
+            border: 2px solid #3f5b9e;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .select-wrapper select {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: #eaf2ff;
+            font-size: 1.3rem;
+            font-weight: 500;
+            padding: 16px 0;
+            outline: none;
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .select-wrapper select option {
+            background: #1e2b4a;
+            color: #fff;
+            padding: 10px;
+        }
+        .chip-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 20px;
+        }
+        .chip {
+            background: #233156;
+            border: 1px solid #5572c0;
+            color: #bdd2ff;
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+        }
+
+        .slider-block {
+            margin-top: 25px;
+        }
+        .slider-block input {
+            width: 100%;
+        }
+
+        .audio-panel {
+            background: #0f172b;
+            border-radius: 48px;
+            padding: 20px 32px;
+            border: 1px solid #2d4070;
+            margin: 20px 0 28px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            box-shadow: 0 6px 0 #070b16;
+        }
+        .audio-panel-left, .audio-panel-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .audio-label {
+            color: #a5befa;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .audio-select {
+            background: #1e2842;
+            border: 1px solid #4f6fc0;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-size: 1rem;
+            cursor: pointer;
+            outline: none;
+        }
+        .audio-select option {
+            background: #1b2746;
+        }
+        .gain-slider {
+            width: 200px;
+            background: #1e2842;
+            border-radius: 20px;
+            padding: 6px 6px;
+        }
+        .gain-value {
+            color: #c2d6ff;
+            min-width: 60px;
+            font-family: monospace;
+            font-size: 1.1rem;
+        }
+        .audio-status {
+            color: #ffaa66;
+            font-size: 0.95rem;
+            background: #1e1e2a;
+            padding: 8px 18px;
+            border-radius: 40px;
+            border: 1px solid #4a5e8b;
+        }
+
+        .row-buttons {
+            display: flex;
+            gap: 24px;
+            margin: 24px 0 20px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            flex: 1 1 220px;
+            background: #263157;
+            border: 1px solid #4f6fc0;
+            border-radius: 60px;
+            padding: 20px 30px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #d5e4ff;
+            box-shadow: 0 8px 0 #0f172d;
+            transition: 0.1s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            cursor: pointer;
+        }
+        .btn.start {
+            background: #1a7943;
+            border-color: #58e081;
+            color: white;
+            box-shadow: 0 8px 0 #0c4124;
+        }
+        .btn.stop {
+            background: #b13e4f;
+            border-color: #ff8a8a;
+            box-shadow: 0 8px 0 #602630;
+        }
+        .btn:disabled {
+            opacity: 0.4;
+            transform: translateY(5px);
+            box-shadow: 0 3px 0 #0f172d;
+            pointer-events: none;
+        }
+        .timer {
+            font-size: 4.2rem;
+            font-family: 'JetBrains Mono', monospace;
+            background: #0b1222;
+            border-radius: 100px;
+            padding: 20px 34px;
+            text-align: center;
+            border: 1px solid #4660a8;
+            color: #deecff;
+            letter-spacing: 6px;
+            box-shadow: inset 0 4px 12px black;
+            margin: 20px 0;
+        }
+        .timer span {
+            font-size: 1.8rem;
+            color: #8aa2df;
+            margin-left: 15px;
+        }
+        .footer-note {
+            display: flex;
+            justify-content: space-between;
+            color: #6c83b9;
+            border-top: 1px dashed #31486b;
+            padding-top: 20px;
+            margin-top: 20px;
+        }
+        .resolution-warning {
+            color: #ffaa66;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            padding: 8px;
+            background: #2a1e1e;
+            border-radius: 20px;
+            text-align: center;
+        }
+        .status-message {
+            background: #1a243b;
+            border-radius: 40px;
+            padding: 14px 24px;
+            margin: 20px 0 10px;
+            color: #8aa2df;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>
+        <span class="gradient-text">⚡ Flawless Screen Capture-AI _16606</span>
+        <span class="encoding-badge">#VP9 #AV1 #VVC #H.265 #240FPS #BBE</span>
+    </h1>
+
+    <div class="grid-panel">
+        <!-- 分辨率卡 -->
+        <div class="card">
+            <div class="card-title">📐 分辨率 (理想值)</div>
+            <div class="radio-vertical" id="resGroup">
+                <div class="radio-item" data-width="3840" data-height="2160">
+                    <input type="radio" name="res" value="3840x2160" id="res4k" checked>
+                    <label for="res4k">4K UHD</label>
+                    <span class="value-tag">3840x2160</span>
+                </div>
+                <div class="radio-item" data-width="7680" data-height="4320">
+                    <input type="radio" name="res" value="7680x4320" id="res8k">
+                    <label for="res8k">8K</label>
+                    <span class="value-tag">7680x4320</span>
+                </div>
+                <div class="radio-item" data-width="1920" data-height="1080">
+                    <input type="radio" name="res" value="1920x1080" id="res1080">
+                    <label for="res1080">1080p</label>
+                    <span class="value-tag">1920x1080</span>
+                </div>
+                <div class="radio-item" data-width="2560" data-height="1440">
+                    <input type="radio" name="res" value="2560x1440" id="res2k">
+                    <label for="res2k">2K</label>
+                    <span class="value-tag">2560x1440</span>
+                </div>
+            </div>
+            <div class="resolution-warning" id="resWarning">
+                ⚠️ 实际分辨率取决于显示器支持
+            </div>
+        </div>
+
+        <!-- 帧率卡 + 比特率滑块 -->
+        <div class="card">
+            <div class="card-title">⚡ 帧率 (FPS) · 支持高刷</div>
+            <div class="radio-vertical" id="fpsGroup">
+                <div class="radio-item">
+                    <input type="radio" name="fps" value="240" id="fps240">
+                    <label for="fps240">240 FPS</label>
+                    <span class="value-tag">极限高刷</span>
+                </div>
+                <div class="radio-item">
+                    <input type="radio" name="fps" value="144" id="fps144">
+                    <label for="fps144">144 FPS</label>
+                    <span class="value-tag">电竞级</span>
+                </div>
+                <div class="radio-item">
+                    <input type="radio" name="fps" value="120" id="fps120">
+                    <label for="fps120">120 FPS</label>
+                    <span class="value-tag">高帧率</span>
+                </div>
+                <div class="radio-item">
+                    <input type="radio" name="fps" value="60" id="fps60" checked>
+                    <label for="fps60">60 FPS</label>
+                    <span class="value-tag">流畅</span>
+                </div>
+                <div class="radio-item">
+                    <input type="radio" name="fps" value="30" id="fps30">
+                    <label for="fps30">30 FPS</label>
+                    <span class="value-tag">兼容</span>
+                </div>
+            </div>
+            <div class="slider-block">
+                <div style="display:flex; justify-content:space-between; color:#b1c7ff;">比特率 <span id="bitrateDisplay">120 Mbps</span></div>
+                <input type="range" id="bitrateSlider" min="10" max="350" value="120" step="1">
+            </div>
+        </div>
+
+        <!-- 色彩采样卡 -->
+        <div class="card">
+            <div class="card-title">🎨 色彩采样</div>
+            <div class="radio-vertical" id="chromaGroup">
+                <div class="radio-item">
+                    <input type="radio" name="chroma" value="420" id="chroma420" checked>
+                    <label for="chroma420">4:2:0</label>
+                    <span class="value-tag">标准</span>
+                </div>
+                <div class="radio-item">
+                    <input type="radio" name="chroma" value="422" id="chroma422">
+                    <label for="chroma422">4:2:2</label>
+                    <span class="value-tag">专业</span>
+                </div>
+                <div class="radio-item">
+                    <input type="radio" name="chroma" value="444" id="chroma444">
+                    <label for="chroma444">4:4:4</label>
+                    <span class="value-tag">无损色度</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 编码器自由选择卡 -->
+        <div class="card">
+            <div class="card-title">🔩 强制选择编码 (全部格式)</div>
+            <div class="codec-selector">
+                <div class="select-wrapper">
+                    <select id="codecSelect">
+                        <option value="vp9">VP9</option>
+                        <option value="vp8">VP8</option>
+                        <option value="h264">H.264 (AVC)</option>
+                        <option value="av1">AV1</option>
+                        <option value="h265">H.265 (HEVC)</option>
+                        <option value="avc1">AVC1</option>
+                        <option value="vvc">VVC (H.266)</option>
+                        <option value="mp4">MP4 (基本)</option>
+                    </select>
+                </div>
+                <div class="chip-container" id="selectedCodecChip"></div>
+                <div style="color:#98b0f0; font-size:0.9rem; margin-top:15px; padding-left:6px;">
+                    ⚙️ 根据选择强制使用对应编码器
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 音频增强面板 (完全保留第二段代码逻辑) -->
+    <div class="audio-panel">
+        <div class="audio-panel-left">
+            <span class="audio-label">🎧 音频增强</span>
+            <select id="audioEnhance" class="audio-select">
+                <option value="none">无增强</option>
+                <option value="bbe" selected>BBE 高清晰激励 (人声/细节)</option>
+            </select>
+        </div>
+        <div class="audio-panel-right">
+            <span class="audio-label">🔊 增益</span>
+            <input type="range" id="gainSlider" class="gain-slider" min="-10" max="20" value="3" step="1">
+            <span id="gainValue" class="gain-value">+3 dB</span>
+        </div>
+        <div id="audioStatus" class="audio-status">⚙️ 准备就绪 · 内置硬限制器防削波</div>
+    </div>
+
+    <!-- 全局状态显示 -->
+    <div class="status-message" id="globalStatus">📁 请点击“开始录制”并选择保存位置</div>
+
+    <!-- 按钮和计时器 -->
+    <div class="row-buttons">
+        <button class="btn start" id="startBtn">▶ 开始录制 (流式写入磁盘)</button>
+        <button class="btn stop" id="stopBtn" disabled>⏹ 停止保存</button>
+    </div>
+    <div class="timer" id="timerDisplay">
+        00:00 <span>分钟</span>
+    </div>
+    <div class="footer-note">
+        <span>💾 Flawless Screen Capture-AI _16606</span>
+        <span>🧩 音频BBE增强 · 视频编码可选</span>
+    </div>
+</div>
+
+<script>
+(function() {
+    // ==================== DOM 元素 ====================
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const timerDiv = document.getElementById('timerDisplay');
+    const bitrateSlider = document.getElementById('bitrateSlider');
+    const bitrateDisplay = document.getElementById('bitrateDisplay');
+    const codecSelect = document.getElementById('codecSelect');
+    const chipContainer = document.getElementById('selectedCodecChip');
+    const resWarning = document.getElementById('resWarning');
+    const globalStatus = document.getElementById('globalStatus');
+
+    const resRadios = document.querySelectorAll('input[name="res"]');
+    const fpsRadios = document.querySelectorAll('input[name="fps"]');
+    const chromaRadios = document.querySelectorAll('input[name="chroma"]');
+
+    // 音频元素
+    const audioEnhanceSelect = document.getElementById('audioEnhance');
+    const gainSlider = document.getElementById('gainSlider');
+    const gainSpan = document.getElementById('gainValue');
+    const audioStatusDiv = document.getElementById('audioStatus');
+
+    gainSlider.addEventListener('input', () => {
+        let val = gainSlider.value;
+        gainSpan.innerText = (val > 0 ? '+' : '') + val + ' dB';
+        audioStatusDiv.innerHTML = val > 12 ? '⚠️ 增益过高，限制器已介入' : '🎧 BBE+限制器 已优化';
+    });
+    gainSpan.innerText = '+3 dB';
+
+    // 更新编码芯片
+    function updateCodecChip() {
+        const selected = codecSelect.options[codecSelect.selectedIndex].text;
+        chipContainer.innerHTML = `<span class="chip" style="background:#2f4780; border-color:#98b4ff;">🔷 ${selected}</span>`;
+    }
+    codecSelect.addEventListener('change', updateCodecChip);
+    updateCodecChip();
+
+    bitrateSlider.addEventListener('input', (e) => bitrateDisplay.innerText = e.target.value + ' Mbps');
+    bitrateDisplay.innerText = bitrateSlider.value + ' Mbps';
+
+    // ==================== 辅助函数 ====================
+    function getSelectedResolution() {
+        for (let r of resRadios) if (r.checked) {
+            const [w, h] = r.value.split('x').map(Number);
+            return { width: w, height: h };
+        }
+        return { width: 3840, height: 2160 };
+    }
+    
+    function getSelectedFPS() {
+        for (let f of fpsRadios) if (f.checked) return parseInt(f.value, 10);
+        return 60;
+    }
+    
+    function getSelectedChroma() {
+        for (let c of chromaRadios) if (c.checked) return c.value;
+        return '420';
+    }
+    
+    function getSelectedBitrateMbps() {
+        return parseInt(bitrateSlider.value, 10);
+    }
+    
+    function getSelectedCodecKey() {
+        return codecSelect.value;
+    }
+
+    function buildMimeFromSelection() {
+        const codecKey = getSelectedCodecKey();
+        const chroma = getSelectedChroma();
+        let baseMime = 'video/mp4';
+        let codecPart = '';
+
+        switch (codecKey) {
+            case 'vp9': baseMime = 'video/webm'; codecPart = 'vp9'; break;
+            case 'vp8': baseMime = 'video/webm'; codecPart = 'vp8'; break;
+            case 'h264': baseMime = 'video/mp4'; codecPart = 'avc1.640034'; break;
+            case 'av1':
+                baseMime = 'video/mp4';
+                if (chroma === '444') codecPart = 'av01.0.15M.08.0.110.01.01.01.0';
+                else if (chroma === '422') codecPart = 'av01.0.15M.08.0.110.01.01.00.0';
+                else codecPart = 'av01.0.15M.08';
+                break;
+            case 'h265': baseMime = 'video/mp4'; codecPart = 'hev1.1.6.L153.B0'; break;
+            case 'avc1': baseMime = 'video/mp4'; codecPart = 'avc1.640034'; break;
+            case 'vvc': baseMime = 'video/mp4'; codecPart = 'vvc1'; break;
+            case 'mp4': baseMime = 'video/mp4'; codecPart = ''; break;
+        }
+        if (codecPart) return `${baseMime}; codecs="${codecPart}"`;
+        return baseMime;
+    }
+
+    function getSupportedMimeOrFallback() {
+        const desired = buildMimeFromSelection();
+        if (MediaRecorder.isTypeSupported(desired)) {
+            console.log('✅ 使用选定编码:', desired);
+            return desired;
+        } else {
+            const base = desired.split(';')[0];
+            if (MediaRecorder.isTypeSupported(base)) {
+                console.warn('⚠️ 特定编码不支持，使用容器:', base);
+                globalStatus.innerText = `所选编码可能不完全支持，将使用基本容器。`;
+                return base;
+            } else {
+                globalStatus.innerText = `浏览器不支持该编码/容器组合，将尝试video/mp4`;
+                return 'video/mp4';
+            }
+        }
+    }
+
+    function getBaseMimeType(mimeWithCodec) {
+        return mimeWithCodec.split(';')[0].trim();
+    }
+
+    function getFileExtension(baseMime) {
+        if (baseMime.includes('webm')) return 'webm';
+        return 'mp4';
+    }
+
+    // ==================== 获取屏幕流 ====================
+    async function getCustomStream() {
+        const { width, height } = getSelectedResolution();
+        const fps = getSelectedFPS();
+        
+        const constraints = {
+            video: {
+                width: { ideal: width },
+                height: { ideal: height },
+                frameRate: { ideal: fps, max: fps }
+            },
+            audio: {
+                echoCancellation: false,
+                noiseSuppression: false,
+                autoGainControl: false,
+                channelCount: 2,
+                sampleRate: 48000
+            },
+            systemAudio: "include"
+        };
+
+        try {
+            const displayStream = await navigator.mediaDevices.getDisplayMedia(constraints);
+            const track = displayStream.getVideoTracks()[0];
+            const settings = track.getSettings();
+            
+            if (settings.width && settings.height) {
+                if (settings.width < width || settings.height < height) {
+                    resWarning.innerHTML = `⚠️ 实际分辨率: ${settings.width}x${settings.height} (低于选择值)`;
+                    resWarning.style.color = '#ffaa66';
+                } else {
+                    resWarning.innerHTML = `✅ 实际分辨率: ${settings.width}x${settings.height}`;
+                    resWarning.style.color = '#66ff99';
+                }
+            }
+            if (settings.frameRate) {
+                const fpsInfo = document.createElement('div');
+                fpsInfo.style.marginTop = '5px';
+                fpsInfo.style.fontSize = '0.9rem';
+                if (settings.frameRate < fps) {
+                    fpsInfo.innerHTML = `⚠️ 实际帧率: ${Math.round(settings.frameRate)} FPS`;
+                    fpsInfo.style.color = '#ffaa66';
+                } else {
+                    fpsInfo.innerHTML = `✅ 实际帧率: ${Math.round(settings.frameRate)} FPS`;
+                    fpsInfo.style.color = '#66ff99';
+                }
+                resWarning.appendChild(fpsInfo);
+            }
+            return displayStream;
+        } catch (err) {
+            if (err.name === 'NotAllowedError') throw new Error('请授予屏幕共享权限');
+            else if (err.name === 'NotFoundError') throw new Error('未找到可录制的屏幕内容');
+            else throw err;
+        }
+    }
+
+    // ==================== 计时器 ====================
+    function formatMinSec(seconds) {
+        const m = Math.floor(seconds / 60);
+        const s = Math.floor(seconds % 60);
+        return `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+    }
+    
+    let startTime = null, timerInterval = null;
+    function startTimer() {
+        startTime = Date.now();
+        timerInterval = setInterval(() => {
+            if (!startTime) return;
+            const elapsed = Math.floor((Date.now() - startTime)/1000);
+            timerDiv.innerHTML = formatMinSec(elapsed) + ' <span>分钟</span>';
+        }, 200);
+    }
+    function stopTimer() { 
+        if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+    }
+    function resetTimer() { timerDiv.innerHTML = '00:00 <span>分钟</span>'; }
+
+    // ==================== 录制状态变量 ====================
+    let rawStream = null;
+    let audioContext = null;
+    let processedStreamForRecord = null;
+    let mediaRecorder = null;
+    let recordingActive = false;
+    
+    let fileHandle = null;
+    let writableStream = null;
+    let isCleanedUp = false;
+
+    // ==================== 安全关闭文件流（稳定保存的核心） ====================
+    async function closeWritableStream() {
+        if (writableStream) {
+            try {
+                await writableStream.close();
+                console.log('✅ 文件流已安全关闭');
+            } catch (e) {
+                console.error('关闭文件流失败:', e);
+            } finally {
+                writableStream = null;
+            }
+        }
+    }
+
+    // ==================== 统一清理资源 ====================
+    async function fullCleanup() {
+        if (isCleanedUp) return;
+        isCleanedUp = true;
+        
+        stopTimer();
+        recordingActive = false;
+        
+        // 停止 MediaRecorder
+        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+            mediaRecorder.stop();
+        }
+        
+        // 关闭文件流（关键）
+        await closeWritableStream();
+        
+        // 停止所有轨道
+        if (rawStream) {
+            rawStream.getTracks().forEach(t => t.stop());
+            rawStream = null;
+        }
+        
+        // 关闭音频上下文
+        if (audioContext && audioContext.state !== 'closed') {
+            await audioContext.close().catch(e => console.warn);
+            audioContext = null;
+        }
+        
+        processedStreamForRecord = null;
+        fileHandle = null;
+        mediaRecorder = null;
+        
+        // 重置 UI
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+        resetTimer();
+        isCleanedUp = false;
+    }
+
+    // ==================== 停止录制（对外接口） ====================
+    async function stopRecording() {
+        if (!recordingActive) return;
+        globalStatus.innerText = '正在停止录制并保存文件...';
+        await fullCleanup();
+        globalStatus.innerText = '✅ 录制完成，文件已保存到磁盘。';
+    }
+
+    // ==================== 开始录制 ====================
+    async function startRecording() {
+        try {
+            isCleanedUp = false;
+            resetTimer();
+            
+            // 1. 确定 MIME 类型
+            const mimeWithCodec = getSupportedMimeOrFallback();
+            const baseMime = getBaseMimeType(mimeWithCodec);
+            const ext = getFileExtension(baseMime);
+            
+            // 2. 选择保存位置
+            const now = new Date();
+            const codecKey = getSelectedCodecKey();
+            const suggestedName = `录制_${codecKey}_${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}_${now.getHours()}时${now.getMinutes()}分.${ext}`;
+            
+            fileHandle = await window.showSaveFilePicker({
+                suggestedName: suggestedName,
+                types: [{
+                    description: 'Video File',
+                    accept: { [baseMime]: [`.${ext}`] }
+                }]
+            });
+            writableStream = await fileHandle.createWritable();
+            globalStatus.innerText = `📁 保存位置已选定，正在准备录制...`;
+
+            // 3. 获取屏幕流
+            rawStream = await getCustomStream();
+            if (!rawStream) return;
+
+            const audioTracks = rawStream.getAudioTracks();
+            if (audioTracks.length === 0) {
+                audioStatusDiv.innerHTML = '⚠️ 未检测到系统音频，仅录制视频';
+                audioStatusDiv.style.color = '#ffaa66';
+            } else {
+                audioStatusDiv.innerHTML = '🎤 已捕获系统音频';
+                audioStatusDiv.style.color = '#66ff99';
+            }
+
+            const enhanceMode = audioEnhanceSelect.value;
+            const gainDb = parseFloat(gainSlider.value);
+            let finalStream = rawStream;
+
+            // ===== BBE音频增强（完全保留第二段代码逻辑） =====
+            if (audioTracks.length > 0 && enhanceMode === 'bbe') {
+                try {
+                    const audioTrack = audioTracks[0];
+                    if (audioTrack.readyState === 'ended' || !audioTrack.enabled) {
+                        throw new Error('音频轨道不可用');
+                    }
+
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)({
+                        latencyHint: 'playback',
+                        sampleRate: 48000
+                    });
+                    
+                    if (audioContext.state === 'suspended') {
+                        await audioContext.resume();
+                    }
+
+                    const sourceStream = new MediaStream([audioTrack]);
+                    const sourceNode = audioContext.createMediaStreamSource(sourceStream);
+
+                    const gainNode = audioContext.createGain();
+                    gainNode.gain.value = Math.pow(10, gainDb / 20);
+
+                    const compressorNode = audioContext.createDynamicsCompressor();
+                    compressorNode.threshold.setValueAtTime(-18, audioContext.currentTime);
+                    compressorNode.knee.setValueAtTime(6, audioContext.currentTime);
+                    compressorNode.ratio.setValueAtTime(4, audioContext.currentTime);
+                    compressorNode.attack.setValueAtTime(0.005, audioContext.currentTime);
+                    compressorNode.release.setValueAtTime(0.2, audioContext.currentTime);
+
+                    const lowComp = audioContext.createBiquadFilter();
+                    lowComp.type = 'peaking';
+                    lowComp.frequency.value = 80;
+                    lowComp.Q.value = 1.5;
+                    lowComp.gain.value = 2;
+
+                    const highExciter = audioContext.createBiquadFilter();
+                    highExciter.type = 'highshelf';
+                    highExciter.frequency.value = 5000;
+                    highExciter.gain.value = 4;
+
+                    const presence = audioContext.createBiquadFilter();
+                    presence.type = 'peaking';
+                    presence.frequency.value = 3000;
+                    presence.Q.value = 2.0;
+                    presence.gain.value = 2;
+
+                    sourceNode.connect(lowComp);
+                    lowComp.connect(presence);
+                    presence.connect(highExciter);
+                    highExciter.connect(compressorNode);
+                    compressorNode.connect(gainNode);
+
+                    const limiterNode = audioContext.createDynamicsCompressor();
+                    limiterNode.threshold.setValueAtTime(-2, audioContext.currentTime);
+                    limiterNode.knee.setValueAtTime(0, audioContext.currentTime);
+                    limiterNode.ratio.setValueAtTime(20, audioContext.currentTime);
+                    limiterNode.attack.setValueAtTime(0.001, audioContext.currentTime);
+                    limiterNode.release.setValueAtTime(0.01, audioContext.currentTime);
+
+                    gainNode.connect(limiterNode);
+
+                    const destNode = audioContext.createMediaStreamDestination();
+                    limiterNode.connect(destNode);
+
+                    const processedStream = destNode.stream;
+                    const processedAudioTracks = processedStream.getAudioTracks();
+                    if (processedAudioTracks.length === 0) {
+                        throw new Error('处理后音频轨道为空');
+                    }
+
+                    const videoTracks = rawStream.getVideoTracks();
+                    finalStream = new MediaStream([...videoTracks, processedAudioTracks[0]]);
+
+                    audioStatusDiv.innerHTML = `🎧 BBE+限制器 | 增益 ${gainDb>0?'+':''}${gainDb} dB`;
+                    audioStatusDiv.style.color = '#34c759';
+
+                } catch (err) {
+                    console.warn('BBE增强处理失败，使用原始音频', err);
+                    audioStatusDiv.innerHTML = `⚠️ BBE增强失败，使用原始音频`;
+                    audioStatusDiv.style.color = '#ff9500';
+                    if (audioContext) {
+                        try { await audioContext.close(); } catch (e) {}
+                        audioContext = null;
+                    }
+                }
+            } else if (audioTracks.length === 0) {
+                audioStatusDiv.innerHTML = '🔇 无音频轨道，仅录制视频';
+            } else {
+                audioStatusDiv.innerHTML = '🔊 无增强模式，原始音频录制';
+            }
+
+            processedStreamForRecord = finalStream;
+
+            // 4. 初始化 MediaRecorder
+            const bitrateBps = getSelectedBitrateMbps() * 1_000_000;
+            const options = { 
+                mimeType: mimeWithCodec, 
+                videoBitsPerSecond: bitrateBps
+            };
+
+            mediaRecorder = new MediaRecorder(finalStream, options);
+            
+            // 流式写入磁盘
+            mediaRecorder.ondataavailable = async (event) => {
+                if (event.data.size > 0 && writableStream) {
+                    try {
+                        await writableStream.write(event.data);
+                    } catch (e) {
+                        console.error('写入磁盘失败', e);
+                        globalStatus.innerText = '❌ 写入文件出错，正在尝试保存已写入部分...';
+                        await stopRecording();
+                    }
+                }
+            };
+
+            mediaRecorder.onstop = async () => {
+                await fullCleanup();
+                globalStatus.innerText = '✅ 录制完成，文件已保存到磁盘。';
+                timerDiv.innerHTML = '00:00 <span>分钟</span>';
+            };
+
+            mediaRecorder.onerror = (e) => {
+                console.error('录制器错误:', e);
+                globalStatus.innerText = '❌ 录制器发生错误，正在停止...';
+                stopRecording();
+            };
+
+            mediaRecorder.start(1000);
+            recordingActive = true;
+            startTimer();
+
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+            globalStatus.innerText = `🔴 正在录制 (${bitrateSlider.value} Mbps) · 数据实时写入磁盘`;
+
+            // 监听屏幕共享停止
+            rawStream.getVideoTracks()[0].onended = () => {
+                if (recordingActive) {
+                    globalStatus.innerText = '屏幕共享已停止，正在保存文件...';
+                    stopRecording();
+                }
+            };
+
+        } catch (err) {
+            console.error('启动录制失败:', err);
+            globalStatus.innerText = `❌ 错误: ${err.message}`;
+            await fullCleanup();
+            audioStatusDiv.innerHTML = '❌ 录制启动失败';
+            audioStatusDiv.style.color = '#ff3b30';
+        }
+    }
+
+    // 事件绑定
+    startBtn.addEventListener('click', startRecording);
+    stopBtn.addEventListener('click', stopRecording);
+
+    // 美化radio选中效果
+    document.querySelectorAll('.radio-item').forEach(item => {
+        const radio = item.querySelector('input[type="radio"]');
+        if (radio && radio.checked) item.classList.add('selected');
+        radio?.addEventListener('change', function(e) {
+            document.querySelectorAll(`input[name="${this.name}"]`).forEach(r => {
+                r.closest('.radio-item').classList.remove('selected');
+            });
+            if (this.checked) this.closest('.radio-item').classList.add('selected');
+        });
+    });
+
+    // 页面关闭前确保流被关闭
+    window.addEventListener('beforeunload', () => {
+        if (writableStream) {
+            writableStream.close().catch(() => {});
+        }
+        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+            mediaRecorder.stop();
+        }
+        if (rawStream) {
+            rawStream.getTracks().forEach(t => t.stop());
+        }
+    });
+})();
+</script>
+</body>
+</html>   Flawless Screen Capture-AI _16606
